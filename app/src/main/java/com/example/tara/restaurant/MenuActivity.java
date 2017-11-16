@@ -2,15 +2,16 @@ package com.example.tara.restaurant;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -27,9 +28,11 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MenuActivity extends AppCompatActivity {
 
-    List<String> foodCourses = new ArrayList<>();
+    List<String> foodPlatters = new ArrayList<>();
+    String data = "";
+    TextView output;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -38,12 +41,12 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    Context context = MainActivity.this;
+                    Context context = MenuActivity.this;
                     Class destinationActivity = MainActivity.class;
                     startActivity(new Intent(context, destinationActivity));
                     return true;
                 case R.id.navigation_dashboard:
-                    startActivity(new Intent(MainActivity.this, YourOrderActivity.class));
+                    startActivity(new Intent(MenuActivity.this, YourOrderActivity.class));
                     return true;
             }
             return false;
@@ -54,14 +57,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_menu);
 
-        setContentView(R.layout.activity_main2);
+        Intent intent = getIntent();
+        String course = intent.getStringExtra("received_text");
 
+        // bottom navigation buttons
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+        // put info into strings
         final ArrayAdapter mAdapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_list_item_1, foodCourses);
+                this, android.R.layout.simple_list_item_1, foodPlatters);
 
         ListView mListView = (ListView) findViewById(R.id.food_courses);
 
@@ -69,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "https://resto.mprog.nl/categories";
+        String url = "https://resto.mprog.nl/menu";
 
         // request string response from url
         JsonObjectRequest stringRequest = new JsonObjectRequest(
@@ -78,27 +85,30 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            JSONArray courses = response.getJSONArray("categories");
+                            JSONArray courses = response.getJSONArray("items");
 
                             //foodCourses = new String[courses.length()];
                             for (int i = 0; i < courses.length(); i++) {
 
-                                // JSONObject course = courses.getJSONObject(i);
-                                String sCourse = courses.getString(i);
+                                JSONObject course = courses.getJSONObject(i);
+                                String sName = course.getString("name");
+                                String sPrice = course.getString("price");
 
-                                foodCourses.add(sCourse);
-                                //System.out.println(foodCourses);
+                                foodPlatters.add(sName);
+                                data += "Platter name: " + sName + "\n price: " + sPrice + "\n\n\n";
                             }
+                            System.out.println(data);
                             mAdapter.notifyDataSetChanged();
+                            Toast.makeText(MenuActivity.this, "Gelukt", Toast.LENGTH_SHORT).show();
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            Toast.makeText(MenuActivity.this, "Catch", Toast.LENGTH_SHORT).show();
                         }
-
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(MainActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MenuActivity.this, "Not connected to the internet", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -106,20 +116,20 @@ public class MainActivity extends AppCompatActivity {
         queue.add(stringRequest);
 
         mListView.setOnItemClickListener(new
-           AdapterView.OnItemClickListener() {
-               @Override
-               public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
-               {
-                   String given_text = String.valueOf(adapterView.getItemAtPosition(position));
-//                   String foodCoursePicked = "You selected " +
-//                           given_text;
+             AdapterView.OnItemClickListener() {
+                 @Override
+                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 
-//                   Toast.makeText(MainActivity.this, foodCoursePicked, Toast.LENGTH_SHORT).show();
+                     String given_text = String.valueOf(adapterView.getItemAtPosition(position));
+                     String foodCoursePicked = "You selected " +
+                           given_text;
 
-                   Intent intent = new Intent(MainActivity.this, MenuActivity.class);
-                   intent.putExtra("received_text", given_text);
-                   startActivity(intent);
-               }
-           });
+                     Toast.makeText(MenuActivity.this, foodCoursePicked, Toast.LENGTH_SHORT).show();
+
+                     Intent intent = new Intent(MenuActivity.this, InfoActivity.class);
+                     intent.putExtra("received_text", given_text);
+                     startActivity(intent);
+                 }
+             });
     }
 }

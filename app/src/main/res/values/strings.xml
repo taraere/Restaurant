@@ -3,4 +3,8 @@
     <string name="title_home">Menu</string>
     <string name="title_your_order">Your Order</string>
     <string name="title_activity_your_order">YourOrderActivity</string>
+    <string name="error">Sorry that didn\'t work</string>
+    <string name="menu">Menu</string>
+    <string name="order">On it\'s way</string>
+    <string name="information">Information</string>
 </resources>
