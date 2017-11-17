@@ -6,6 +6,24 @@
     android:layout_height="match_parent"
     tools:context="com.example.tara.restaurant.YourOrderActivity">
 
+    <ListView
+        android:id="@+id/food_courses"
+        android:layout_width="370dp"
+        android:layout_height="403dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/navigation"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appbar"
+        app:layout_constraintVertical_bias="1.0">
+
+    </ListView>
+
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,7 +38,8 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_your_order" />
+    <include layout="@layout/content_your_order"
+        android:id="@+id/include" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -30,5 +49,15 @@
         app:rippleColor="@color/colorPrimary"
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@drawable/ic_home_black_24dp" />
+
+    <Button
+        android:id="@+id/order_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:onClick="clickedOrder"
+        android:text="Order"
+        app:layout_anchor="@+id/include"
+        app:layout_anchorGravity="top|center_horizontal" />
 
 </android.support.design.widget.CoordinatorLayout>

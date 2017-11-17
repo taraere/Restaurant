@@ -31,8 +31,8 @@ import java.util.List;
 public class MenuActivity extends AppCompatActivity {
 
     List<String> foodPlatters = new ArrayList<>();
-    String data = "";
-    TextView output;
+    JSONObject c;
+    List<String> yourOrder = new ArrayList<>();
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -60,7 +60,7 @@ public class MenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_menu);
 
         Intent intent = getIntent();
-        String course = intent.getStringExtra("received_text");
+        final String course = intent.getStringExtra("received_text");
 
         // bottom navigation buttons
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
@@ -90,16 +90,17 @@ public class MenuActivity extends AppCompatActivity {
                             //foodCourses = new String[courses.length()];
                             for (int i = 0; i < courses.length(); i++) {
 
-                                JSONObject course = courses.getJSONObject(i);
-                                String sName = course.getString("name");
-                                String sPrice = course.getString("price");
+                                c = courses.getJSONObject(i);
+                                String sCategory = c.getString("category");
 
-                                foodPlatters.add(sName);
-                                data += "Platter name: " + sName + "\n price: " + sPrice + "\n\n\n";
+                                if (sCategory.equals(course)){
+
+                                    String sName = c.getString("name");
+                                    foodPlatters.add(sName);
+                                }
                             }
-                            System.out.println(data);
                             mAdapter.notifyDataSetChanged();
-                            Toast.makeText(MenuActivity.this, "Gelukt", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MenuActivity.this, "Done", Toast.LENGTH_SHORT).show();
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Toast.makeText(MenuActivity.this, "Catch", Toast.LENGTH_SHORT).show();
@@ -121,13 +122,13 @@ public class MenuActivity extends AppCompatActivity {
                  public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 
                      String given_text = String.valueOf(adapterView.getItemAtPosition(position));
-                     String foodCoursePicked = "You selected " +
-                           given_text;
+                     String foodCoursePicked = "You selected " + given_text;
 
                      Toast.makeText(MenuActivity.this, foodCoursePicked, Toast.LENGTH_SHORT).show();
 
                      Intent intent = new Intent(MenuActivity.this, InfoActivity.class);
                      intent.putExtra("received_text", given_text);
+                     intent.putExtra("button_text", "Submit");
                      startActivity(intent);
                  }
              });
