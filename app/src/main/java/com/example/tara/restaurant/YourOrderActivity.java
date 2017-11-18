@@ -3,9 +3,7 @@ package com.example.tara.restaurant;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -78,10 +76,7 @@ public class YourOrderActivity extends AppCompatActivity {
                 startActivity(new Intent(YourOrderActivity.this, MainActivity.class));
             }
         });
-
     }
-
-
 
     private void loadSharedPrefs() {
         SharedPreferences prefs = this.getSharedPreferences("settings", this.MODE_PRIVATE);
@@ -105,8 +100,7 @@ public class YourOrderActivity extends AppCompatActivity {
         for (int i = 0; i < size; i++) {
             editor.putString("yourOrder" + i, yourOrder.get(i));
         }
-
-        editor.commit();
+        editor.apply();
     }
 
     public void clickedOrder(View view) {
@@ -122,7 +116,8 @@ public class YourOrderActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         try {
                             String time = response.getString("preparation_time");
-                            Toast.makeText(YourOrderActivity.this, time, Toast.LENGTH_SHORT).show();
+                            String message = "Please wait " + time + " minutes";
+                            Toast.makeText(YourOrderActivity.this, message, Toast.LENGTH_SHORT).show();
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Toast.makeText(YourOrderActivity.this, "Catch", Toast.LENGTH_SHORT).show();
